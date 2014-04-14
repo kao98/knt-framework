@@ -21,8 +21,6 @@ use \mageekguy\atoum;
  * Last version tested: 1.0
  */
 
-use \Knt;
-
 class Framework extends atoum\test
 {
     /**
@@ -31,9 +29,9 @@ class Framework extends atoum\test
      */
     public function testSingleton() {
         $this
-            ->object(Knt\Framework\Framework::getInstance())
+            ->object(\Knt\Framework\Framework::getInstance())
                 ->isInstanceOf('\Knt\Framework\Framework')
-                ->isIdenticalTo(Knt\Framework\Framework::getInstance())
+                ->isIdenticalTo(\Knt\Framework\Framework::getInstance())
         ;
     }
 
