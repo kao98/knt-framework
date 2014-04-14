@@ -3,10 +3,10 @@
 .gitattributes export-ignore
 .gitignore export-ignore
 
-index.php
-run-unit-tests.cmd
-run-unit-tests.sh
+index.php export-ignore
+run-unit-tests.cmd export-ignore
+run-unit-tests.sh export-ignore
 
-nbproject
+nbproject export-ignore
 
-Knt/Framework/tests
+Knt/Framework/tests export-ignore
