@@ -1,0 +1,24 @@
+{
+    "name": "knt/framework",
+    "description": "A new mVc framework",
+    "keywords": ["framework", "mvc"],
+    "homepage": "http://github.com/kao98/knt-framework",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kao ..98",
+            "email": "kao98@kaonet-fr.net",
+            "homepage": "http://www.kaonet-fr.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "atoum/atoum": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {"Knt\\Framework": "Knt/Framework"}
+    }
+}
