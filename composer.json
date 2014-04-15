@@ -19,6 +19,6 @@
         "atoum/atoum": "dev-master"
     },
     "autoload": {
-        "psr-4": {"Knt\\Framework": "Knt/Framework"}
+        "psr-4": {"Knt\\Framework\\": "Knt/Framework"}
     }
 }
