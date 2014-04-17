@@ -30,28 +30,6 @@ class Knt
 {
     
     /**
-     * PSR-0 class loader function
-     * @see https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md
-     * @param string $className the name of the class to load
-     */
-    public static function psr0_classLoader($className) {
-        
-        $className = ltrim($className, '\\');
-        $fileName  = '';
-        $namespace = '';
-        if ($lastNsPos = strrpos($className, '\\')) {
-            $namespace = substr($className, 0, $lastNsPos);
-            $className = substr($className, $lastNsPos + 1);
-            $fileName  = str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
-        }
-        $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
-
-        include $fileName;
-        
-        return true; //usefull??
-    }
-    
-    /**
      * Knt::Go is a kind of entry point for the Knt Framework.
      * Simply call Knt::Go() to handle your request.
      * 
@@ -69,8 +47,37 @@ class Knt
      */
     public static function Go() {
         
-        set_include_path(get_include_path() . PATH_SEPARATOR . __DIR__ . '/../..');
-        spl_autoload_register(array('Knt', 'psr0_classLoader'), true, true);
+        //Do we need an autoloader?
+        if (!class_exists('\Knt\Framework\Framework', true)) {
+            //Yes, this is a basic test, maybe the component factory has been
+            //included manualy, but for now, this is enough. 
+            //So yes, we need an autoloader.
+
+            spl_autoload_register(function ($className) {
+
+                if (strpos($className, 'Knt\Framework') === false) {
+                    return false;
+                }
+
+                $fileName = 
+                    __DIR__
+                    .str_replace('\\', '/',
+                        str_replace('Knt\Framework', '', $className)
+                    )
+                    .'.php'
+                ;
+
+                if (file_exists($fileName)) {
+                    require $fileName;
+                    return  true;
+                }
+
+                return false;
+
+            });
+
+        }
+        
         \Knt\Framework\Framework::handleRequest();
 
     }
