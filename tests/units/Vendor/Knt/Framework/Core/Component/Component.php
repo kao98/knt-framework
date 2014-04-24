@@ -28,92 +28,177 @@ class Component extends atoum\test
 {
     /**
      * Test the constructor and the accessors of the Component class
-     * Also test method chaining
      */
     public function testConstructorAndAccessors() {
         
-        $frameworkMock = new \mock\Knt\Framework\Framework;
-        $collectionMock = new \mock\Knt\Framework\Core\Collection;
-        $collectionMock2 = new \mock\Knt\Framework\Core\Collection;
+    //Given
         
-        $component = new Core\Component\Component($frameworkMock, 'method', $collectionMock);
-        $this
-            ->object($component)->isCallable()
-            ->string($component->getMethod())->isEqualTo('method')
-            ->object($component->getData())->isEqualTo($collectionMock);
+        $frameworkMock      = new \mock\Knt\Framework\Framework;
+        $dataCollection     = new Core\Collection;
+        $method             = 'method';
+        
+    //When
+        
+        $component = new Core\Component\Component(
+            $frameworkMock,
+            $method,
+            $dataCollection
+        );
+        
+    //Then
         
         $this
-            ->string($component->setMethod('foo')->getMethod())->isEqualTo('foo')
-            ->object($component->setData($collectionMock2)->getData())->isEqualTo($collectionMock2);
+                
+            ->object($component)
+                ->isCallable()
+                
+            ->string($component->getMethod())
+                ->isEqualTo($method)
+                
+            ->object($component->getData())
+                ->isIdenticalTo($dataCollection)
+                
+        ;
+        
+    }
+    
+    /**
+     * Test method chaining
+     */
+    public function testMethodChaining() {
+        
+    //Given
+        
+        $frameworkMock      = new \mock\Knt\Framework\Framework;
+        $dataCollection     = new Core\Collection;
+        $method             = 'method';
+        
+    //When
+        
+        $component = new Core\Component\Component($frameworkMock, null, new Core\Collection);
+        $component
+            ->setData   ($dataCollection)
+            ->setMethod ($method)
+        ;
+        
+    //Then
+        
+        $this
+
+            ->string($component->getMethod())
+                ->isEqualTo($method)
+                
+            ->object($component->getData())
+                ->isIdenticalTo($dataCollection)
+                
+        ;
         
     }
     
     /**
      * Test the Invoke method throw an exception if no method to invoke
      */
-    public function testInvoke_exceptIfMethodDontExists() {
+    public function testInvokeExceptIfMethodDontExists() {
         
-        $frameworkMock = new \mock\Knt\Framework\Framework;
+    //Given
+        
+        $frameworkMock  = new \mock\Knt\Framework\Framework;
         $collectionMock = new \mock\Knt\Framework\Core\Collection;
         
-        $component = new Core\Component\Component($frameworkMock, 'method', $collectionMock);
+        $component      = new Core\Component\Component(
+            $frameworkMock, 
+            'method', 
+            $collectionMock
+        );
         
-        $this->exception(
-                    function() use($component) {
-                        $component->invoke('method');
-                    }
-                )
-                ->hasMessage("Component 'Knt\Framework\Core\Component\Component' has no method 'method'");
+    //When
+        $this
+            ->exception(
+                function() use($component) {
+                    $component->invoke('method');
+                }
+            )
+                    
+    //Then
+                ->hasMessage("Component 'Knt\Framework\Core\Component\Component' has no method 'method'")
+                    
+        ;
+    }
+    
+    /**
+     * Test the Invoke method throw an exception if method null
+     */
+    public function testInvokeExceptIfNullMethod() {
         
-        $this->exception(
-                    function() use($component) {
-                        $component->setMethod(null);
-                        $component();
-                    }
-                )
-                ->hasMessage("Method to invoke is missing.");
+    //Given
+        
+        $frameworkMock  = new \mock\Knt\Framework\Framework;
+        $collectionMock = new \mock\Knt\Framework\Core\Collection;
+        
+        $component      = new Core\Component\Component(
+            $frameworkMock, 
+            'method', 
+            $collectionMock
+        );
+        
+    //When
+        $this
+            ->exception(
+                function() use($component) {
+                    $component->setMethod(null);
+                    $component();
+                }
+            )
+                
+    //Then
+                
+                ->hasMessage("Method to invoke is missing.")
+                    
+        ;
         
     }
     
     /**
      * Test the nominal use of the Invoke method.
      */
-    public function testInvoke_nominalUse() {
+    public function testInvokeAndCallableNominalUse() {
         
-        $parameters = array('method' => 'getData');
-        $frameworkMock = new \mock\Knt\Framework\Framework;
-        $collection = new \Knt\Framework\Core\Collection($parameters);
+    //Given
+        
+        $emptyCollection    = new Core\Collection();
+        $parameters         = array('method' => 'setData', 'data' => $emptyCollection);
+        $frameworkMock      = new \mock\Knt\Framework\Framework;
+        $collection         = new \Knt\Framework\Core\Collection($parameters);
+        
+        $component = new Core\Component\Component(
+            $frameworkMock,
+            'setMethod',
+            $collection
+        );
         
         //We will invoke the setMethod method that will update the method
         //from 'setMethod' to 'getData'.
         
-        $component = new Core\Component\Component($frameworkMock, 'setMethod', $collection);
+    //When
+        
+        //'regular' invoke call: will set the method to 'setData'
         $component->invoke('setMethod');
         
-        $this
-            ->string($component->getMethod())->isEqualTo('getData');
-        
-    }
-    
-    /**
-     * Same test as testInvoke_nominalUse but using the __invoke magic method
-     */
-    public function testCallable_nominalUse() {
-        
-        $parameters = array('method' => 'getData');
-        $frameworkMock = new \mock\Knt\Framework\Framework;
-        $collection = new \Knt\Framework\Core\Collection($parameters);
-        
-        //We will invoke the setMethod method that will update the method
-        //from 'setMethod' to 'getData'.
-        
-        $component = new Core\Component\Component($frameworkMock, 'setMethod', $collection);
+        //'magic' call. The method has been set to 'setData', so now we will set
+        //the data with the empty collection as it is in the $parameters array.
         $component();
         
+    //Then
+        
         $this
-            ->string($component->getMethod())->isEqualTo('getData');
+            ->string($component->getMethod())
+                ->isEqualTo('setData')
+                
+            ->object($component->getData())
+                ->isIdenticalTo($emptyCollection)
+        
+        ;
         
     }
-    
     
 }
