@@ -11,12 +11,16 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-namespace Knt\Framework\Core\Routeur;
+namespace Knt\Framework\Core\Router;
 
 /**
  *
  * @author Aurelien
  */
-interface AutomatedRouteurInterface extends RouteurInterface {
-    public function search($uri, $path, $extension);
+interface RouterInterface {
+    //put your code here
+    public function addRoute(RouteInterface $route);
+    public function getRoute($uri);
+    public function exists($uri);
+    
 }

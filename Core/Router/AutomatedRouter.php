@@ -11,14 +11,14 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-namespace Knt\Framework\Core\Routeur;
+namespace Knt\Framework\Core\Router;
 
 /**
- * Description of AutomatedRouteur
+ * Description of AutomatedRouter
  *
  * @author Aurelien
  */
-class AutomatedRouteur extends Routeur implements AutomatedRouteurInterface {
+class AutomatedRouter extends Router implements AutomatedRouterInterface {
         
     public function exists($uri) {
         return $this->search($uri, VIEWS_PATH, VIEWS_EXTENSION);

@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace Knt\Framework\Core\Routeur;
+namespace Knt\Framework\Core\Router;
 
 /**
  * Description of Route

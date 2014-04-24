@@ -21,7 +21,7 @@ require_once 'Config/const.php';
 
 use 
     \Knt\Framework\Core\RequestInterface,
-    \Knt\Framework\Core\Routeur
+    \Knt\Framework\Core\Router
 ;
 
 /**
@@ -48,7 +48,7 @@ class Framework
 
     protected static    $_instance  = null; //Singleton instance
     protected           $_request   = null; //The request instance
-    protected           $_routeur   = null; //The routeur associated to the framework
+    protected           $_router   = null; //The router associated to the framework
 
     /**
      * Constructor. Initialize a new instance of the Framework with the given Request object.
@@ -56,11 +56,11 @@ class Framework
      * @param RequestInterface $request The request that will be handled by the framework. Default null.
      * If null, the handled request will be initialize with some default values.
      */
-    private function __construct(Routeur\RouteurInterface $routeur = null, RequestInterface $request = null) {
+    private function __construct(Router\RouterInterface $router = null, RequestInterface $request = null) {
 
         $this
             ->setRequest($request)
-            ->setRouteur($routeur)
+            ->setRouter($router)
         ;
 
     }
@@ -73,29 +73,29 @@ class Framework
     /**
      * Singleton implementation: return the Framework instance.
      * Initialize / set the request of the Framework instance with the given request object.
-     * Initialize / set the routeur of the Framework instance with the given routeur object.
+     * Initialize / set the router of the Framework instance with the given router object.
      * 
+     * @param Router\RouterInterface $router (default null) A router to use with the framework.
+     * If null, and no instance of the framework exists,
+     * a new instance will be initialized with a new default Router object.
      * @param RequestInterface $request (default null) A request wich will be passed to the Framework instance.
      * If null, and no instance of a Framework exists, 
      * the instance will be initialized with a new default Request object.
-     * @param Routeur\RouterInterface $routeur (default null) A routeur to use with the framework.
-     * If null, and no instance of the framework exists,
-     * a new instance will be initialized with a new default Routeur object.
      * @return Framework the singleton instance 
      */
-    public static function getInstance(Routeur\RouteInterface $routeur = null, RequestInterface $request = null) {
+    public static function getInstance(Router\RouteInterface $router = null, RequestInterface $request = null) {
         
         if (self::$_instance !== null) {
             if ($request !== null) {
                 self::$_instance->setRequest($request);
             }
-            if ($routeur !== null) {
-                self::$_instance->setRouteur($routeur);
+            if ($router !== null) {
+                self::$_instance->setRouter($router);
             }
         }
         
         return self::$_instance 
-            ?: self::$_instance = new Framework($routeur, $request);
+            ?: self::$_instance = new Framework($router, $request);
         
     }
     
@@ -107,13 +107,13 @@ class Framework
      * a new default Request object.
      * @return Framework The instancied Framework instance.
      */
-    public static function handleRequest(Routeur\RouteurInterface $routeur = null, RequestInterface $request = null) {
+    public static function handleRequest(Router\RouterInterface $router = null, RequestInterface $request = null) {
         
         if (DEBUG_LEVEL > 0) {
             $startingTime = microtime(true); //TODO: refactor that
         }
         
-        $instance = self::getInstance($routeur, $request);
+        $instance = self::getInstance($router, $request);
         
         if (RequestInterface::METHOD_GET === $instance->request->getMethod()) {
             
@@ -149,7 +149,7 @@ class Framework
         
         if (!
             $this
-                ->getRouteur()
+                ->getRouter()
                 ->exists($query, CONTROLLERS_PATH, CONTROLLERS_EXTENSION)
             ) {
             
@@ -171,7 +171,7 @@ class Framework
         
         $exists = function($uri) {
             return $this
-                ->getRouteur()
+                ->getRouter()
                 ->exists($uri, VIEWS_PATH, VIEWS_EXTENSION)
             ;
         };
@@ -196,23 +196,23 @@ class Framework
     /**
      * Retrieve a route that lead to a component
      * that can handle the the given query.
-     * This is usefull when used with an 'automated' routeur.
-     * @see Routeur\Routeur for more informations about routeurs and 'automated' routeurs
+     * This is usefull when used with an 'automated' router.
+     * @see Router\Router for more informations about routers and 'automated' routers
      * @param string $query a query string that ask for a component
-     * @param string $componentType the type of the component we are looking for (usefull with 'automated' routeurs)
+     * @param string $componentType the type of the component we are looking for (usefull with 'automated' routers)
      * @return string the URI of one route that lead to a component ready to process the query.
      * @throws Exception\KntFrameworkException 404 if no route can be found.
      */
     public function retrieveRouteUri($query, $componentType = self::COMPONENT_TYPE_VIEW) {
         
-        $routeur = $this->getRouteur();
+        $router = $this->getRouter();
         
-        //Caution: this basic call is required with an non-automated (static) routeur
-        if ($routeur->exists($query)) {
+        //Caution: this basic call is required with an non-automated (static) router
+        if ($router->exists($query)) {
             return $query;
         }
 
-        if (is_subclass_of($routeur, 'Knt\Framework\Core\Routeur\AutomatedRouteurInterface')) {
+        if (is_subclass_of($router, 'Knt\Framework\Core\Router\AutomatedRouterInterface')) {
 
             if ($componentType !== self::COMPONENT_TYPE_VIEW) {
                 return $this->_retrieveControllerRouteUri($query);
@@ -247,7 +247,7 @@ class Framework
         }
         
         $routeUri   = $this->retrieveRouteUri($query, $componentType);
-        $route      = $this->getRouteur()->getRoute($routeUri);
+        $route      = $this->getRouter()->getRoute($routeUri);
         $class      = $this->getProjectNamespace() . strtr($route->getComponentName(), '/', '\\');
         $interface  = 'Knt\Framework\Core\Component\\' . ucfirst($componentType) . 'Interface';
 
@@ -273,30 +273,30 @@ class Framework
     }
     
     /**
-     * Return the routeur of the current Framework object
+     * Return the router of the current Framework object
      *
-     * @return Routeur\RouteurInterface The routeur corresponding to the current Framework instance
+     * @return Router\RouterInterface The router corresponding to the current Framework instance
      */
-    public function getRouteur() {
+    public function getRouter() {
         
-        return $this->_routeur;
+        return $this->_router;
     
     }
 
     /**
-     * Set the routeur for the current Framework instance
+     * Set the router for the current Framework instance
      * 
-     * @param Routeur\RouteurInterface $routeur (default null) the routeur object. If null, will initialize a default routeur. 
+     * @param Router\RouterInterface $router (default null) the router instance. If null, will initialize a default router. 
      */
-    public function setRouteur(Routeur\RouteurInterface $routeur = null) {
+    public function setRouter(Router\RouterInterface $router = null) {
         
-        if ($routeur == null) {
+        if ($router == null) {
 
-            $this->_routeur = new Routeur\AutomatedRouteur;
+            $this->_router = new Router\AutomatedRouter;
         
         } else {
         
-            $this->_routeur = $routeur;
+            $this->_router = $router;
         
         }
         
