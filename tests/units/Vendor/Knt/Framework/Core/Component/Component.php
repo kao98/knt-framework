@@ -29,7 +29,7 @@ class Component extends atoum\test
     /**
      * Test the constructor and the accessors of the Component class
      */
-    public function testConstructorAndAccessors() {
+    public function test__construct() {
         
     //Given
         
