@@ -16,6 +16,8 @@ namespace Knt\Framework\Tests\Units\Core\Component;
 
 use \mageekguy\atoum;
 
+DEFINED('VIEWS_INDEX') OR DEFINE('VIEWS_INDEX', 'Home');
+
  /**
  * Tests for the Request class.
  * Last version tested: 1.0
@@ -27,10 +29,40 @@ class View extends atoum\test
 {
     /**
      * To test the constructor without parameters.
-     * It should initialize the request with $_REQUEST object
+     * It should initialize the request with $_REQUEST object and a default method.
      */
-    public function testSkipped() {
-        $this->skip("Test skipped");
+    public function test__construct() {
+        
+    //Given
+        
+        $frameworkMock      = new \mock\Knt\Framework\Framework;
+        $requestMock        = new \mock\Knt\Framework\Core\Request;
+        $dataCollection     = new Core\Collection;
+        
+        $requestMock    ->getMockController()->getQueriedData   = $dataCollection;
+        $frameworkMock  ->getMockController()->getRequest       = $requestMock;
+        
+    //When
+        
+        $component = new Core\Component\View (
+            $frameworkMock
+        );
+        
+    //Then
+        
+        $this
+                
+            ->object($component)
+                ->isCallable()
+                
+            ->object($component->getQueriedData())
+                ->isIdenticalTo($dataCollection)
+            
+            ->string($component->getMethod())
+                ->isEqualTo(VIEWS_INDEX)
+                
+        ;
+        
     }
 
 }
