@@ -83,7 +83,7 @@ class Framework
      * the instance will be initialized with a new default Request object.
      * @return Framework the singleton instance 
      */
-    public static function getInstance(Router\RouteInterface $router = null, RequestInterface $request = null) {
+    public static function getInstance(Router\RouterInterface $router = null, RequestInterface $request = null) {
         
         if (self::$_instance !== null) {
             if ($request !== null) {
