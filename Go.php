@@ -11,9 +11,15 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-//require 'Vendor/Knt/Framework/Framework.php';
+//Right now it is not sure an autoloader has been registered.
+//We need those class anyway so ...
+require_once 'Core/Router/RouterInterface.php';
+require_once 'Core/RequestInterface.php';
 
-//use \Knt\Framework\Framework;
+use 
+    \Knt\Framework\Core\Router\RouterInterface,
+    \Knt\Framework\Core\RequestInterface
+;
 
 
 /**
@@ -45,11 +51,11 @@ class Knt
      * If you wan't to register your own autoloader, feel free. That shouldn't break
      * the one used by the framework. But do it before calling Knt::Go().
      */
-    public static function Go() {
+    public static function Go(RouterInterface $router = null, RequestInterface $request = null) {
         
         //Do we need an autoloader?
         if (!class_exists('\Knt\Framework\Framework', true)) {
-            //Yes, this is a basic test, maybe the component factory has been
+            //Yes, this is a basic test, maybe the core framework class has been
             //included manualy, but for now, this is enough. 
             //So yes, we need an autoloader.
 
@@ -78,7 +84,7 @@ class Knt
 
         }
         
-        \Knt\Framework\Framework::handleRequest();
+        \Knt\Framework\Framework::handleRequest($router, $request);
 
     }
     
