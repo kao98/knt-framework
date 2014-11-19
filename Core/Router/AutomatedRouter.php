@@ -19,7 +19,28 @@ namespace Knt\Framework\Core\Router;
  * @author Aurelien
  */
 class AutomatedRouter extends Router implements AutomatedRouterInterface {
+    
+    private $_routeClass;
+    
+    public function __construct($routeClass = '\Knt\Framework\Core\Router\Route') {
+        $this->setRouteClass($routeClass);
+    }
+    
+    public function setRouteClass($routeClass) {
         
+        if (
+            !class_exists($routeClass) || 
+            !is_subclass_of($routeClass, 'Knt\Framework\Core\Router\RouteInterface')
+            ) {
+            
+            throw new \InvalidArgumentException('The name of the class is not valid or the specified class doesn\'t implement Knt\Framework\Core\Router\RouteInterface.');
+            
+        }
+        
+        $this->_routeClass = $routeClass;
+        
+    }
+    
     public function exists($uri) {
         return $this->search($uri, VIEWS_PATH, VIEWS_EXTENSION);
     }
@@ -45,7 +66,7 @@ class AutomatedRouter extends Router implements AutomatedRouterInterface {
             $componentName  = implode('/', $uriParts);
             
             if (is_file($path . '/' . $componentName . $extension)) {
-                $this->addRoute(new Route($uri, $componentName, $methodName));
+                $this->addRoute(new $this->_routeClass($uri, $componentName, $methodName));
                 return true;
             }
         
