@@ -40,42 +40,49 @@ class AutomatedRouter extends Router implements AutomatedRouterInterface {
         $this->_routeClass = $routeClass;
         
     }
-    
-    public function exists($uri, ...$options) {
-        $path =         count($options) > 0 ? $options[0] : '';
-        $extension =    count($options) > 1 ? $options[1] : '.php';
-        return $this->search($uri, $path, $extension);
-    }
-    
-    public function search($uri, $path, $extension) {
+        
+    public function search($uri, $path, $extension, array $options = []) {
         
         if (parent::exists($uri)) {
             return true;
         }
         
-        return $this->_search($uri, $path, $extension);
+        return $this->_search($uri, $path, $extension, $options);
 
     }
 
-    private function _search($uri, $path, $extension) {
+    private function _search($uri, $path, $extension, $options) {
         
-        $path = rtrim($path, '\\/');
-        
-        if (is_dir($path)) {
+        $exists = function($value) use ($uri, $path, $extension) {
+            $path = rtrim($path, '\\/');
 
-            $uriParts       = explode('/', trim($uri, '/'));
-            $methodName     = array_pop($uriParts);
-            $componentName  = implode('/', $uriParts);
-            
-            if (is_file($path . '/' . $componentName . $extension)) {
-                $this->addRoute(new $this->_routeClass($uri, $componentName, $methodName));
-                return true;
+            if (is_dir($path)) {
+
+                $uriParts       = explode('/', trim($value, '/'));
+                $methodName     = array_pop($uriParts);
+                $componentName  = implode('/', $uriParts);
+
+                if (is_file($path . '/' . $componentName . $extension)) {
+                    $this->addRoute(new $this->_routeClass($value, $componentName, $methodName), $uri);
+                    return true;
+                }
+
             }
+            
+            return false;
+        };
         
+        $uri = rtrim($uri, '\\/');
+        
+        if (array_key_exists('SEARCH_VIEW', $options) && $options['SEARCH_VIEW'] === true) {
+
+            $uri1   = $uri . '/' . VIEWS_INDEX;
+            $uri2   = $uri . '/' . DEFAULT_VIEW . '/' . VIEWS_INDEX;
+
+            return $exists($uri) || $exists($uri1) || $exists($uri2);
         }
         
-        return false;
-        
+        return $exists($uri);
     }
     
 }

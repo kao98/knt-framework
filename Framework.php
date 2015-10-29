@@ -139,73 +139,8 @@ class Framework
     }
 
     /**
-     * Retrieve the URI of the route that lead to a controller
-     * that can process the given query.
-     * @param string $query the query string that need a controller to be processed
-     * @return string the uri of one route that lead to a controller
-     * @throws Exception\KntFrameworkException 404 if no route can be find for the given query.
-     */
-    private function _retrieveControllerRouteUri($query) {
-        
-        if (!
-            $this
-                ->getRouter()
-                ->exists($query, CONTROLLERS_PATH, CONTROLLERS_EXTENSION)
-            ) {
-            
-            throw new Exception\KntFrameworkException(
-                sprintf('%s cannot be Found', $query),
-                404
-            );
-            
-        }
-        
-        return $query;
-    }
-    
-    /**
-     * Retrieve the URI of the route that can
-     * return the desired view identified by $query.
-     * @param string $query the query string that ask for a view
-     * @return string the uri of one route that lead to a view
-     * @throws Exception\KntFrameworkException 404 if no route can be find for the given query.
-     */
-    private function _retrieveViewRouteUri($query) {
-        
-        $exists = function($uri) {
-            return $this
-                ->getRouter()
-                ->exists($uri, VIEWS_PATH, VIEWS_EXTENSION)
-            ;
-        };
-        
-        $query  = rtrim($query, '/'); //Required to avoid 'double /' in the uri (think about the 'root' query)
-        $uri1   = $query . '/' . VIEWS_INDEX;
-        $uri2   = $query . '/' . DEFAULT_VIEW . '/' . VIEWS_INDEX;
-        
-        if ($exists($query)) {
-            return $query;
-        }
-        
-        if ($exists($uri1)) {
-            return $uri1;
-        }
-   
-        if ($exists($uri2)) {
-            return $uri2;
-        }
-        
-        //Ok. Surrender :-(
-        throw new Exception\KntFrameworkException(
-            sprintf('%s cannot be Found', $query),
-            404
-        );
-        
-    }
-    
-    /**
      * Retrieve a route that lead to a component
-     * that can handle the the given query.
+     * that can handle the given query.
      * This is usefull when used with an 'automated' router.
      * @see Router\Router for more informations about routers and 'automated' routers
      * @param string $query a query string that ask for a component
@@ -217,21 +152,27 @@ class Framework
         
         $router = $this->getRouter();
         
-        //Caution: this basic call is required with an non-automated (static) router
+        //Caution: this basic call is required with a non-automated (static) router
         if ($router->exists($query)) {
             return $query;
         }
-
+        
         if (is_subclass_of($router, 'Knt\Framework\Core\Router\AutomatedRouterInterface')) {
+            $path = VIEWS_PATH;
+            $extension = VIEWS_EXTENSION;
+            $options = ['SEARCH_VIEW' => true];
 
-            if ($componentType !== self::COMPONENT_TYPE_VIEW) {
-                return $this->_retrieveControllerRouteUri($query);
+            if ($componentType === self::COMPONENT_TYPE_CONTROLLER) {
+                $path = CONTROLLERS_PATH;
+                $extension = CONTROLLERS_EXTENSION;
+                $options = [];
             }
 
-            return $this->_retrieveViewRouteUri($query);
-              
+            if ($router->search($query, $path, $extension, $options)) {
+                return $query;
+            }   
         }
-        
+
         //Ok. Surrender :-(
         throw new Exception\KntFrameworkException(
             sprintf('%s cannot be Found', $query),
@@ -263,10 +204,13 @@ class Framework
         $route      = $this->getRouter()->getRoute($routeUri);
         $class      = $this->getProjectNamespace() . strtr($route->getComponentName(), '/', '\\');
         $interface  = 'Knt\Framework\Core\Component\\' . ucfirst($componentType) . 'Interface';
-
+        
+        $path       = $componentType === self::COMPONENT_TYPE_CONTROLLER ? CONTROLLERS_PATH : VIEWS_PATH;
+        $extension  = $componentType === self::COMPONENT_TYPE_CONTROLLER ? CONTROLLERS_EXTENSION : VIEWS_EXTENSION;
+        
         //Components may not respond to PSR-0 naming conventions so
         //we require it manually
-        require_once (VIEWS_PATH . '/' . $route->getComponentName() . VIEWS_EXTENSION);
+        require_once ($path . '/' . $route->getComponentName() . $extension);
         
         if (is_subclass_of("$class", $interface)) {
             return new $class($this, $route->getMethodName());

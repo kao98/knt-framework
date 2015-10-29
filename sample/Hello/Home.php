@@ -22,7 +22,7 @@ class Home extends \Knt\Framework\Sample\Hello\BaseView {
 
     public function index() {
         echo ""
-            . "<form method='post' action='Hello/Hello/sayHelloTo'>"
+            . "<form method='post' action='/index.php/Hello/Hello/sayHelloTo'>"
                 . "<p>Say hello to: "
                 . "<input type='text' name='name' value='World' />"
                 . "<input type='submit'>"

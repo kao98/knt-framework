@@ -21,7 +21,7 @@ namespace Knt\Framework\Sample\Hello;
 class Hello extends \Knt\Framework\Core\Component\Controller {
     
     public function sayHelloTo($name) {
-        header('location: /Hello/Home/hello?name=' . $name);
+        header('location: /index.php/Hello/Home/hello?name=' . $name);
     }
     
 }
