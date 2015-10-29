@@ -180,6 +180,10 @@ class Framework
         $uri1   = $query . '/' . VIEWS_INDEX;
         $uri2   = $query . '/' . DEFAULT_VIEW . '/' . VIEWS_INDEX;
         
+        if ($exists($query)) {
+            return $query;
+        }
+        
         if ($exists($uri1)) {
             return $uri1;
         }
