@@ -11,7 +11,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-namespace Knt\Framework\Sample\Sample_1;
+namespace Knt\Framework\Sample\Hello;
 
 /**
  * Description of Home

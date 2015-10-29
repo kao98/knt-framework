@@ -11,17 +11,26 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-namespace Knt\Framework\Sample\Sample_1;
+namespace Knt\Framework\Sample\Hello;
 
 /**
  * Description of Home
  *
  * @author Aurelien
  */
-class Home extends \Knt\Framework\Sample\Sample_1\BaseView {
+class Home extends \Knt\Framework\Sample\Hello\BaseView {
 
     public function index() {
-        echo 'This is sample #1';
+        echo ""
+            . "<form method='post' action='Hello/Hello/sayHelloTo'>"
+                . "<p>Say hello to: "
+                . "<input type='text' name='name' value='World' />"
+                . "<input type='submit'>"
+            . "</form>";
+    }
+    
+    public function hello($name) {
+        echo "Hello $name!";
     }
     
 }
