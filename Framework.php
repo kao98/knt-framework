@@ -153,7 +153,10 @@ class Framework
                 ->exists($query, CONTROLLERS_PATH, CONTROLLERS_EXTENSION)
             ) {
             
-            throw new Exception\KntFrameworkException('Not Found', 404);
+            throw new Exception\KntFrameworkException(
+                sprintf('%s cannot be Found', $query),
+                404
+            );
             
         }
         
@@ -193,7 +196,10 @@ class Framework
         }
         
         //Ok. Surrender :-(
-        throw new Exception\KntFrameworkException('Not Found', 404);  
+        throw new Exception\KntFrameworkException(
+            sprintf('%s cannot be Found', $query),
+            404
+        );
         
     }
     
@@ -227,7 +233,10 @@ class Framework
         }
         
         //Ok. Surrender :-(
-        throw new Exception\KntFrameworkException('Not Found', 404);  
+        throw new Exception\KntFrameworkException(
+            sprintf('%s cannot be Found', $query),
+            404
+        );
     }
     
     /**
