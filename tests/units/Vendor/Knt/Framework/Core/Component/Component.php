@@ -126,6 +126,36 @@ class Component extends atoum\test
     }
     
     /**
+     * Test the Invoke method throw an exception if no method to invoke
+     */
+    public function testInvokeExceptIfMethodIsPrivate() {
+        
+    //Given
+        
+        $frameworkMock  = new \mock\Knt\Framework\Framework;
+        $collectionMock = new \mock\Knt\Framework\Core\Collection;
+        
+        $component      = new Core\Component\Component(
+            $frameworkMock, 
+            '_bind', 
+            $collectionMock
+        );
+        
+    //When
+        $this
+            ->exception(
+                function() use($component) {
+                    $component->invoke('_bind');
+                }
+            )
+                    
+    //Then
+                ->hasMessage("You are not authorized to call Knt\Framework\Core\Component\Component::_bind")
+                    
+        ;
+    }
+    
+    /**
      * Test the Invoke method throw an exception if method null
      */
     public function testInvokeExceptIfNullMethod() {
