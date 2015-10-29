@@ -41,8 +41,10 @@ class AutomatedRouter extends Router implements AutomatedRouterInterface {
         
     }
     
-    public function exists($uri) {
-        return $this->search($uri, VIEWS_PATH, VIEWS_EXTENSION);
+    public function exists($uri, ...$options) {
+        $path =         count($options) > 0 ? $options[0] : '';
+        $extension =    count($options) > 1 ? $options[1] : '.php';
+        return $this->search($uri, $path, $extension);
     }
     
     public function search($uri, $path, $extension) {

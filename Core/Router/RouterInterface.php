@@ -21,6 +21,6 @@ interface RouterInterface {
     //put your code here
     public function addRoute(RouteInterface $route);
     public function getRoute($uri);
-    public function exists($uri);
+    public function exists($uri, ...$options);
     
 }

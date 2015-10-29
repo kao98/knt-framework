@@ -27,7 +27,7 @@ class Router implements RouterInterface {
         $this->_routes[$route->getUri()] = $route;
     }
     
-    public function exists($uri) {
+    public function exists($uri, ...$options) {
         
         if (array_key_exists($uri, $this->_routes)) {
             return true;
