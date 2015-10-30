@@ -61,7 +61,7 @@ class Controller extends Component implements ControllerInterface
         $methodToInvoke = $action ?: $this->getMethod();
 
         if ($methodToInvoke === null) {
-            throw new Framework\Exception\KntFrameworkException('No action specified.');
+            throw new \Knt\Framework\Exception\KntFrameworkException('No action specified.', 400);
         }
         
         $this->invoke($methodToInvoke);

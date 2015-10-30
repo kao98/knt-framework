@@ -202,7 +202,7 @@ class Framework
         
         $routeUri   = $this->retrieveRouteUri($query, $componentType);
         $route      = $this->getRouter()->getRoute($routeUri);
-        $class      = $this->getProjectNamespace() . strtr($route->getComponentName(), '/', '\\');
+        $class      = $this->getProjectNamespace() . strtr(trim($route->getComponentName(), '\\/'), '/', '\\');
         $interface  = 'Knt\Framework\Core\Component\\' . ucfirst($componentType) . 'Interface';
         
         $path       = $componentType === self::COMPONENT_TYPE_CONTROLLER ? CONTROLLERS_PATH : VIEWS_PATH;

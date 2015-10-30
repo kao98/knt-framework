@@ -65,4 +65,61 @@ class View extends atoum\test
         
     }
 
+    /**
+     * The method "render" should actually make a call to the specified method.
+     */
+    public function testRender() {
+        
+    //Given
+        
+        $frameworkMock      = new \mock\Knt\Framework\Framework;
+        $collectionMock     = new \mock\Knt\Framework\Core\CollectionInterface;
+        $view               = new \mock\Knt\Framework\Core\Component\View($frameworkMock, null, $collectionMock);
+        
+    //When
+        
+        $this
+        
+            ->when($view->render('getQueriedData'))
+        
+    //Then
+        
+            ->mock($view)
+                ->call('getQueriedData')
+                    ->once()
+                
+        ;
+        
+    }
+    
+    /**
+     * The method "render" should actually make a call to the default method if
+     * no specific one is specified.
+     */
+    public function testDefaultRender() {
+        
+    //Given
+        
+        $frameworkMock      = new \mock\Knt\Framework\Framework;
+        $collectionMock     = new \mock\Knt\Framework\Core\CollectionInterface;
+        $view               = new \mock\Knt\Framework\Core\Component\View($frameworkMock, 'getQueriedData', $collectionMock);
+        
+        $view->setQueriedData($collectionMock);
+        
+    //When
+        
+        $this
+        
+            ->when($view->render())
+        
+    //Then
+        
+            ->mock($view)
+                ->call('getQueriedData')
+                    ->once()
+                
+        ;
+        
+    }
+
 }
