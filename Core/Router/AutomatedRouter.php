@@ -41,10 +41,16 @@ class AutomatedRouter extends Router implements AutomatedRouterInterface {
         
     }
         
-    public function search($uri, $path, $extension, array $options = []) {
+    public function search($uri, $path = '', $extension = '.php', array $options = []) {
         
         if (parent::exists($uri)) {
             return true;
+        }
+        
+        if (!is_dir($path)) {
+            throw new \InvalidArgumentException(
+                'To automaticaly look for routes, you must specify a valid path.'
+            );
         }
         
         return $this->_search($uri, $path, $extension, $options);
