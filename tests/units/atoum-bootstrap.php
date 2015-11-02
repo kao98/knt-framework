@@ -2,7 +2,7 @@
 
 DEFINED('BASE_PATH') OR DEFINE('BASE_PATH', __DIR__ . '/../../');
 
-require_once(BASE_PATH . 'tests/units/mageekguy.atoum.phar');
+require_once(BASE_PATH . 'tests/units/atoum.phar');
 require_once(BASE_PATH . 'Config/const.php');
 
 spl_autoload_register(function ($className) {
