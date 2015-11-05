@@ -74,13 +74,21 @@ class Controller extends Component implements ControllerInterface
         return $this;
     }
 
-
+    /**
+     * Set the data associated to the controller
+     * @param CollectionInterface $data
+     * @return Controller the current instance, for method chaining.
+     */
     public function setPostedData(CollectionInterface $data) {
         
         return $this->setData($data);
 
     }
 
+    /**
+     * get the data associated to the controller
+     * @return CollectionInterface the data associated to the controller.
+     */
     public function getPostedData() {
 
         return $this->getData();
