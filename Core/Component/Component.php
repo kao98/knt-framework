@@ -25,6 +25,7 @@ use
  * 
  * KNT Component class.
  * Base class for the components (Views, Controllers, ...).
+ * 
  * A component define a method, and some data mapped to it.
  * The specified method makes the component callable.
  * 
