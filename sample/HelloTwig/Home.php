@@ -11,29 +11,23 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
-namespace Knt\Framework\Sample\Hello;
+namespace Knt\Framework\Sample\HelloTwig;
 
 /**
  * Description of Home
  *
  * @author Aurelien
  */
-class Home extends \Knt\Framework\Core\Component\View
+class Home extends \Knt\Framework\Sample\HelloTwig\BaseView
 {
 
     public function index() {
-        echo ""
-            . "<form method='post' action='/index.php/Hello/Hello/sayHelloTo'>"
-                . "<p>Say hello to: "
-                . "<input type='text' name='name' value='World' />"
-                . "<input type='submit'>"
-            . "</form>";
+        $this->loadTemplate('home.index.html.twig');
     }
     
     public function hello($name) {
-        echo "Hello $name!";
-        echo "<br />";
-        echo "<a href='/index.php/Hello'>Go back</a>";
+        $this->loadTemplate('home.hello.html.twig');
+        $this->addToTwig('name', $name);
     }
     
 }
