@@ -18,5 +18,5 @@ namespace Knt\Framework\Core\Router;
  * @author Aurelien
  */
 interface AutomatedRouterInterface extends RouterInterface {
-    public function search($uri, $path, $extension);
+    public function search($uri, $path, $extension, array $options = []);
 }

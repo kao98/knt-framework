@@ -1,14 +1,15 @@
 <?php
 
 /* 
- * knt-cms: another Content Management System (http://www.kaonet-fr.net/cms)
+ * knt-framework
+ * Another php micro-framework (http://www.kaonet-fr.net/framework)
  * 
  * Licensed under The MIT License
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  * 
- * @link          http://www.kaonet-fr.net/cms
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @link    http://www.kaonet-fr.net/framework
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 namespace Knt\Framework\Core\Component;
@@ -23,11 +24,16 @@ use
  * Component.php
  * 
  * KNT Component class.
- * Base class for some components as Views or Controllers
+ * Base class for the components (Views, Controllers, ...).
  * 
- * Version 1.0: Initial version
- *
- * @version 1.0
+ * A component define a method, and some data mapped to it.
+ * The specified method makes the component callable.
+ * 
+ * From the framework point-of-view, a request will be mapped to a component.
+ * 
+ * When the user will ask for the component /Foo/bar, the inherited class
+ * Foo will be callable, the called function being Foo::bar().
+ * 
  * @author Aurélien Reeves (Kao ..98)
  */
 class Component implements ComponentInterface
@@ -38,15 +44,23 @@ class Component implements ComponentInterface
     private $_data      = null; //some data passed to the component
 
     /**
-     * Constructor. Initialize the component.
+     * Construct a new component.
      * 
-     * @param Framework\Framework $frameworkInstance an instance of the framework
-     * @param string $method the name of the method of the component to call
-     * @param CollectionInterface $data a collection of data to pass to the component.
-     * Those data will be bind to the method arguments
-     * @return Component the current Component instance 
+     * @param \Knt\Framework\Framework $frameworkInstance
+     * an instance of the framework
+     * 
+     * @param string $method the name of the component's method to call
+     * 
+     * @param \Knt\Framework\Core\CollectionInterface $data
+     * some data to pass to the component.
+     * Those data will be bind to the method arguments, 
+     * and available by the component at any time.
      */
-    public function __construct(Framework $frameworkInstance, $method, CollectionInterface $data) {
+    public function __construct(
+        Framework $frameworkInstance,
+        $method,
+        CollectionInterface $data
+    ) {
         
         $this->_framework = $frameworkInstance;
         
@@ -59,16 +73,27 @@ class Component implements ComponentInterface
     
     /**
      * Invoke the specified method of the current component.
-     * If the method has some parameters, we will try to bind them with the component datas.
+     * If the method has some parameters, we will try to bind them
+     * with the component datas.
      * 
      * @param string $method the method of the component to invoke
+     * 
+     * @throws \Knt\Framework\Exception\KntFrameworkException
+     * An exception is thrown while trying to invoke a method
+     * that doesn't exists, is not publicly callable, or
+     * with some parameters that cannot be safely bind because they couldn't be
+     * bind by value.
      */
     public function invoke($method) {
 
         if (!method_exists($this, $method)) {
             
             throw new Exception\KntFrameworkException(
-                sprintf("Component '%s' has no method '%s'", get_class($this), $method)
+                sprintf(
+                    "Component '%s' has no method '%s'",
+                    get_class($this),
+                    $method
+                )
             );
             
         }
@@ -124,8 +149,14 @@ class Component implements ComponentInterface
     
     /**
      * The magic :p
-     * @param type $method
-     * @throws Exception\KntFrameworkException
+     * This method make the component callable.
+     * @param string $method
+     * The name of the method to invoke. Default null. If not specified,
+     * we will try to invoke the method previously setted using
+     * the constructor or the method setMehod().
+     * @throws \Knt\Framework\Exception\KntFrameworkException
+     * thrown if not method to invoke has been specified.
+     * Also, see the method 'invoke'.
      */
     public function __invoke($method = null) {
         
@@ -140,7 +171,8 @@ class Component implements ComponentInterface
     /**
      * Set the method of the component to be invoke
      * @param string $method The name of the method to call
-     * @return \Knt\Framework\Core\Component\Component The current instance of the component
+     * @return \Knt\Framework\Core\Component\Component
+     * The current instance of the component (ie. for method chaining).
      */
     public function setMethod($method) {
 
@@ -151,7 +183,7 @@ class Component implements ComponentInterface
 
     /**
      * Return the name of the method of the component to be invoke
-     * @return string the name of the method to be called
+     * @return string the name of the method to be invoked.
      */
     public function getMethod() {
 
@@ -161,8 +193,10 @@ class Component implements ComponentInterface
 
     /**
      * Set the data associated to the component
-     * @param \Knt\Framework\Core\CollectionInterface $data the data to associate with the component
-     * @return \Knt\Framework\Core\Component\Component the current instance of the componnent
+     * @param \Knt\Framework\Core\CollectionInterface $data
+     * the data to associate with the component
+     * @return \Knt\Framework\Core\Component\Component
+     * the current instance of the componnent (ie. for method chaining)
      */
     public function setData(CollectionInterface $data) {
         
@@ -173,7 +207,8 @@ class Component implements ComponentInterface
 
     /**
      * Return the data associated to the component
-     * @return \Knt\Framework\Core\CollectionInterface the data associated to the component
+     * @return \Knt\Framework\Core\CollectionInterface
+     * the data associated to the component
      */
     public function getData() {
 

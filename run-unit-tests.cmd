@@ -1,2 +1,2 @@
-php.exe .\tests\units\mageekguy.atoum.phar -d .\tests\units\Knt
+php.exe .\tests\units\mageekguy.atoum.phar -d .\tests\units -bf .\tests\units\atoum-bootstrap.php
 pause

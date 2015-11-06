@@ -22,9 +22,8 @@ class Router implements RouterInterface {
     
     private $_routes    = array();
     
-    //put your code here
-    public function addRoute(RouteInterface $route) {
-        $this->_routes[$route->getUri()] = $route;
+    public function addRoute(RouteInterface $route, $key = null) {
+        $this->_routes[$key ?: $route->getUri()] = $route;
     }
     
     public function exists($uri) {

@@ -1,14 +1,15 @@
 <?php
 
 /* 
- * knt-cms: another Content Management System (http://www.kaonet-fr.net/cms)
+ * knt-framework
+ * Another php micro-framework (http://www.kaonet-fr.net/framework)
  * 
  * Licensed under The MIT License
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  * 
- * @link          http://www.kaonet-fr.net/cms
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @link    http://www.kaonet-fr.net/framework
+ * @license MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 namespace Knt\Framework\Core\Component;
@@ -22,11 +23,15 @@ use
  * Controller.php
  * 
  * KNT Controller class.
- * Base class for the controllers
+ * Base class for the controllers.
  * 
- * Version 1.0: Initial version
- *
- * @version 1.0
+ * A Controller aims to process datas that have been sent to the server
+ * using a POST request.
+ * 
+ * The goal of a controller is to check / filter the input values coming from
+ * the client, process them / sending them to models, then
+ * responding the client with a view / redirection to a view.
+ * 
  * @author Aurélien Reeves (Kao ..98)
  */
 class Controller extends Component implements ControllerInterface
@@ -61,7 +66,7 @@ class Controller extends Component implements ControllerInterface
         $methodToInvoke = $action ?: $this->getMethod();
 
         if ($methodToInvoke === null) {
-            throw new Framework\Exception\KntFrameworkException('No action specified.');
+            throw new \Knt\Framework\Exception\KntFrameworkException('No action specified.', 400);
         }
         
         $this->invoke($methodToInvoke);
@@ -69,13 +74,21 @@ class Controller extends Component implements ControllerInterface
         return $this;
     }
 
-
+    /**
+     * Set the data associated to the controller
+     * @param CollectionInterface $data
+     * @return Controller the current instance, for method chaining.
+     */
     public function setPostedData(CollectionInterface $data) {
         
         return $this->setData($data);
 
     }
 
+    /**
+     * get the data associated to the controller
+     * @return CollectionInterface the data associated to the controller.
+     */
     public function getPostedData() {
 
         return $this->getData();

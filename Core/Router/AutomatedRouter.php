@@ -19,40 +19,76 @@ namespace Knt\Framework\Core\Router;
  * @author Aurelien
  */
 class AutomatedRouter extends Router implements AutomatedRouterInterface {
-        
-    public function exists($uri) {
-        return $this->search($uri, VIEWS_PATH, VIEWS_EXTENSION);
+    
+    private $_routeClass;
+    
+    public function __construct($routeClass = '\Knt\Framework\Core\Router\Route') {
+        $this->setRouteClass($routeClass);
     }
     
-    public function search($uri, $path, $extension) {
+    public function setRouteClass($routeClass) {
+        
+        if (
+            !class_exists($routeClass) || 
+            !is_subclass_of($routeClass, 'Knt\Framework\Core\Router\RouteInterface')
+            ) {
+            
+            throw new \InvalidArgumentException('The name of the class is not valid or the specified class doesn\'t implement Knt\Framework\Core\Router\RouteInterface.');
+            
+        }
+        
+        $this->_routeClass = $routeClass;
+        
+    }
+        
+    public function search($uri, $path = '', $extension = '.php', array $options = []) {
         
         if (parent::exists($uri)) {
             return true;
         }
         
-        return $this->_search($uri, $path, $extension);
+        if (!is_dir($path)) {
+            throw new \InvalidArgumentException(
+                'To automaticaly look for routes, you must specify a valid path.'
+            );
+        }
+        
+        return $this->_search($uri, $path, $extension, $options);
 
     }
 
-    private function _search($uri, $path, $extension) {
+    private function _search($uri, $path, $extension, $options) {
         
-        $path = rtrim($path, '\\/');
-        
-        if (is_dir($path)) {
+        $exists = function($value) use ($uri, $path, $extension) {
+            $path = rtrim($path, '\\/');
 
-            $uriParts       = explode('/', trim($uri, '/'));
-            $methodName     = array_pop($uriParts);
-            $componentName  = implode('/', $uriParts);
-            
-            if (is_file($path . '/' . $componentName . $extension)) {
-                $this->addRoute(new Route($uri, $componentName, $methodName));
-                return true;
+            if (is_dir($path)) {
+
+                $uriParts       = explode('/', trim($value, '/'));
+                $methodName     = array_pop($uriParts);
+                $componentName  = implode('/', $uriParts);
+
+                if (is_file($path . '/' . $componentName . $extension)) {
+                    $this->addRoute(new $this->_routeClass($value, $componentName, $methodName), $uri);
+                    return true;
+                }
+
             }
+            
+            return false;
+        };
         
+        $uri = rtrim($uri, '\\/');
+        
+        if (array_key_exists('SEARCH_VIEW', $options) && $options['SEARCH_VIEW'] === true) {
+
+            $uri1   = $uri . '/' . VIEWS_INDEX;
+            $uri2   = $uri . '/' . DEFAULT_VIEW . '/' . VIEWS_INDEX;
+
+            return $exists($uri) || $exists($uri1) || $exists($uri2);
         }
         
-        return false;
-        
+        return $exists($uri);
     }
     
 }

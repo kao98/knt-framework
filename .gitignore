@@ -1,2 +1,4 @@
 $~
 /nbproject/private/
+/composer.lock
+/sample/HelloTwig/twig/templates/cache/

@@ -19,7 +19,7 @@ namespace Knt\Framework\Core\Router;
  */
 interface RouterInterface {
     //put your code here
-    public function addRoute(RouteInterface $route);
+    public function addRoute(RouteInterface $route, $key = null);
     public function getRoute($uri);
     public function exists($uri);
     
